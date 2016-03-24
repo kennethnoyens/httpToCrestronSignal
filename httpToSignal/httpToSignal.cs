@@ -50,7 +50,7 @@ namespace hts
         {
             if (!e.Request.HasContentLength)
             {
-                printDebugLine("http request received from " + e.Request.DataConnection.RemoteEndPointAddress + " without content. (so I have no idea what todo with this!)");
+                printDebugLine("http request received from " + e.Request.DataConnection.RemoteEndPointAddress + " without content. (so I have no idea what to do with this!)");
                 return;
             }
 
