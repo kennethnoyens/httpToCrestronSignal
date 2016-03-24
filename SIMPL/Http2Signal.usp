@@ -1,0 +1,56 @@
+/*
+ * (c) 2016 Noyens Kenneth
+*/
+
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#DEFINE_CONSTANT MAXDIGITAL 10
+#DEFINE_CONSTANT MAXSERIAL 10 
+
+#INCLUDEPATH "..\\httpToSignal\\bin\\Debug"
+#USER_SIMPLSHARP_LIBRARY "httpToSignal"
+
+// SIMPL I/O
+DIGITAL_INPUT _SKIP_, startListening;
+DIGITAL_OUTPUT _SKIP_, digitalOut[MAXDIGITAL];
+STRING_OUTPUT stringOut[MAXSERIAL];
+// SIMPL Parameters
+INTEGER_PARAMETER ListenPort;
+
+// Local Vars
+httpToSignal server;
+
+PUSH startListening
+{
+	server.startListening(ListenPort);
+}
+
+CALLBACK FUNCTION processDigital(integer join, string action)
+{
+	makestring(0, "S+ process digital");
+	if(join <= MAXDIGITAL)
+	{
+		if(action = "press")
+			digitalOut[join] = 1;
+		else if(action = "release")
+			digitalOut[join] = 0;
+		else if(action = "pulse")
+			Pulse(50, digitalOut[join]);
+			
+	}
+}
+
+CALLBACK FUNCTION processSerial(integer join, string text)
+{
+	if(join <= MAXSERIAL)
+		stringOut[join] = text;
+}
+
+Function Main()
+{
+    // WaitForInitializationComplete();
+	registerdelegate(server, digitalToPlus, processDigital);
+	registerdelegate(server, stringToPlus, processSerial);
+}
